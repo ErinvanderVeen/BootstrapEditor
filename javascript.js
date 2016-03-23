@@ -56,7 +56,7 @@ $(document).ready(function() {
         }
     });
 
-    // If the apply button is clicked
+    // If a button is pressed which needs to hide the custom menu
     $(".custom-menu input.hide-menu").click(function(){
         if($(this).attr("data-action") == "apply") {
             // Get classes of the block
@@ -85,6 +85,10 @@ $(document).ready(function() {
                 selectedBlock.addClass("col-md-offset-" + newOffset);
                 selectedBlock.addClass("col-lg-offset-" + newOffset);
             }
+        }
+        // If delete button is pressed
+        else if ($(this).attr("data-action") == "delete") {
+            selectedBlock.remove();
         }
 
         // Hide it AFTER the action was triggered
