@@ -20,7 +20,7 @@ $(document).ready(function() {
         // Get classes of the block
         var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
         // Prepare Regex (gets size of block)
-        var classRegex = /col-(..)-(\d+)/g;
+        var classRegex = /col-(..)-(\d+)/;
         // Search for first class that has the size
         $.each(classList, function(index, item) {
             var match = classRegex.exec(item);
@@ -58,13 +58,14 @@ $(document).ready(function() {
             // Get classes of the block
             var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
             // Grab the part that must (not yet) change
-            var classRegex = /col-(..)-\d+/g;
+            classRegex = /col-..-\d+/;
             $.each(classList, function(index, item) {
-                var match = classRegex.exec(item);
-                if (match != null) {
+                if (classRegex.test(item)) {
                     selectedBlock.removeClass(item);
-                    // Change class to new size.
-                    selectedBlock.addClass("col-" + match[1] + "-" + $("#size").val());
+                    // Change class to new size and version
+                    $(".custom-menu input[type='checkbox']:checked").each(function(index, item) {
+                        selectedBlock.addClass("col-" + item.value + "-" + $("#size").val());
+                    });
                 }
             });
         }
