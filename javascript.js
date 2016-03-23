@@ -8,6 +8,25 @@ $(document).ready(function() {
         // Don't allow the browsers to handle the right-click
         e.preventDefault();
 
+        // Get the block
+        var block = $(e.target);
+
+        // Load the properties of the block
+        // Get classes of the block
+        var classList = block.attr("class").split(" ");
+        // Prepare Regex (gets size of block)
+        var classRegex = /col-..-(\d+)/g;
+        // Search for first class that has the size
+        $.each(classList, function(index, item) {
+            var match = classRegex.exec(item);
+            if (match != null) {
+                // Set the dropdown menu to that size
+                $("#size").val(match[1]);
+                // Don't continue checking other classes
+                return false;
+            }
+        });
+
         // Make the right-click-menu appear iff a block was clicked
         if ($(e.target).parents(".row").length > 0) {
             $(".custom-menu").finish().toggle(100).css({
