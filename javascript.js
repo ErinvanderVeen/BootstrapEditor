@@ -1,3 +1,5 @@
+var selectedBlock;
+
 $(document).ready(function() {
     // Allow all sortable rows to be sortable       
     $(".sortable").sortable();
@@ -9,14 +11,14 @@ $(document).ready(function() {
         e.preventDefault();
 
         // Get the block
-        var block = $(e.target);
+        selectedBlock = $(e.target);
 
         // Reset the dropdown menu
         $(".custom-menu input[type='checkbox']").prop('checked', false);
 
         // Load the properties of the block
         // Get classes of the block
-        var classList = block.attr("class") != null ? block.attr("class").split(" ") : null;
+        var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
         // Prepare Regex (gets size of block)
         var classRegex = /col-(..)-(\d+)/g;
         // Search for first class that has the size
@@ -53,7 +55,18 @@ $(document).ready(function() {
     // If the apply button is clicked
     $(".custom-menu input.hide-menu").click(function(){
         if($(this).attr("data-action") == "apply") {
-            alert($("#size").val());
+            // Get classes of the block
+            var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
+            // Grab the part that must (not yet) change
+            var classRegex = /col-(..)-\d+/g;
+            $.each(classList, function(index, item) {
+                var match = classRegex.exec(item);
+                if (match != null) {
+                    selectedBlock.removeClass(item);
+                    // Change class to new size.
+                    selectedBlock.addClass("col-" + match[1] + "-" + $("#size").val());
+                }
+            });
         }
 
         // Hide it AFTER the action was triggered
