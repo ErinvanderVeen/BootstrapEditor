@@ -1,13 +1,16 @@
 h4 {
   margin-top: 25px;
 }
+
 .row {
   margin-bottom: 20px;
 }
+
 .row .row {
   margin-top: 10px;
   margin-bottom: 0;
 }
+
 [class*="col-"] {
   padding-top: 15px;
   padding-bottom: 15px;
@@ -23,19 +26,15 @@ hr {
 }
 
 .custom-menu {
-    display: none;
-    z-index: 1000;
-    position: absolute;
-    overflow: hidden;
-    border: 1px solid black;
-    white-space: nowrap;
-    font-family: sans-serif;
-    background: white;
-    color: #333;
-    padding: 0;
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  overflow: hidden;
+  border: 1px solid black;
+  white-space: nowrap;
+  font-family: sans-serif;
+  background: white;
+  color: #333;
+  padding: 10px;
 }
 
-/* Each of the items in the list */
-.custom-menu {
-    padding: 10px;
-}
