@@ -21,15 +21,19 @@ $(document).ready(function() {
         var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
         // Prepare Regex (gets size of block)
         var classRegex = /col-(..)-(\d+)/;
+        var offsetRegex = /col-..-offset-(\d+)/
+        var match;
+        $("#offset").val(0);
         // Search for first class that has the size
         $.each(classList, function(index, item) {
-            var match = classRegex.exec(item);
-            if (match != null) {
+            if ((match = classRegex.exec(item)) != null) {
                 // Set the dropdown menu to that size
                 $("#size").val(match[2]);
 
                 // Check the boxes that need to be checked
                 $("input[value='" + match[1] + "']").prop('checked', true);
+            } else if ((match = offsetRegex.exec(item)) != null) {
+                $("#offset").val(match[1]);
             }
         });
 
@@ -59,15 +63,28 @@ $(document).ready(function() {
             var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
             // Grab the part that must (not yet) change
             classRegex = /col-..-\d+/;
+            var offsetRegex = /col-..-offset-\d+/
             $.each(classList, function(index, item) {
                 if (classRegex.test(item)) {
+                    // Remove previous class
                     selectedBlock.removeClass(item);
                     // Change class to new size and version
                     $(".custom-menu input[type='checkbox']:checked").each(function(index, item) {
-                        selectedBlock.addClass("col-" + item.value + "-" + $("#size").val());
+                        selectedBlock.addClass("col-" + item.value + "-" + $(".custom-menu #size").val());
                     });
+                } else if (offsetRegex.test(item)) {
+                    // Remove if offset class
+                    selectedBlock.removeClass(item);
                 }
             });
+            // Add all offset classes
+            var newOffset = $(".custom-menu #offset").val();
+            if (newOffset > 0) {
+                selectedBlock.addClass("col-xs-offset-" + newOffset);
+                selectedBlock.addClass("col-sm-offset-" + newOffset);
+                selectedBlock.addClass("col-md-offset-" + newOffset);
+                selectedBlock.addClass("col-lg-offset-" + newOffset);
+            }
         }
 
         // Hide it AFTER the action was triggered
