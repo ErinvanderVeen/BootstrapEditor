@@ -16,7 +16,7 @@ $(document).ready(function() {
 
         // Load the properties of the block
         // Get classes of the block
-        var classList = block.attr("class").split(" ");
+        var classList = block.attr("class") != null ? block.attr("class").split(" ") : null;
         // Prepare Regex (gets size of block)
         var classRegex = /col-(..)-(\d+)/g;
         // Search for first class that has the size
