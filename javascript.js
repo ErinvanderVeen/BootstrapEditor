@@ -11,19 +11,23 @@ $(document).ready(function() {
         // Get the block
         var block = $(e.target);
 
+        // Reset the dropdown menu
+        $(".custom-menu input[type='checkbox']").prop('checked', false);
+
         // Load the properties of the block
         // Get classes of the block
         var classList = block.attr("class").split(" ");
         // Prepare Regex (gets size of block)
-        var classRegex = /col-..-(\d+)/g;
+        var classRegex = /col-(..)-(\d+)/g;
         // Search for first class that has the size
         $.each(classList, function(index, item) {
             var match = classRegex.exec(item);
             if (match != null) {
                 // Set the dropdown menu to that size
-                $("#size").val(match[1]);
-                // Don't continue checking other classes
-                return false;
+                $("#size").val(match[2]);
+
+                // Check the boxes that need to be checked
+                $("input[value='" + match[1] + "']").prop('checked', true);
             }
         });
 
