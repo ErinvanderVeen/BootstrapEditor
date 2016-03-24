@@ -1,4 +1,4 @@
-var selectedBlock;
+var selectedColumn;
 
 $(document).ready(function() {
     // Allow all sortable rows to be sortable       
@@ -10,16 +10,16 @@ $(document).ready(function() {
         // Don't allow the browsers to handle the right-click
         e.preventDefault();
 
-        // Get the block
-        selectedBlock = $(e.target);
+        // Get the column
+        selectedColumn = $(e.target);
 
         // Reset the dropdown menu
         $(".custom-menu input[type='checkbox']").prop('checked', false);
 
-        // Load the properties of the block
-        // Get classes of the block
-        var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
-        // Prepare Regex (gets size of block)
+        // Load the properties of the column
+        // Get classes of the column
+        var classList = selectedColumn.attr("class") != null ? selectedColumn.attr("class").split(" ") : null;
+        // Prepare Regex (gets size of column)
         var classRegex = /col-(..)-(\d+)/;
         var offsetRegex = /col-..-offset-(\d+)/
         var match;
@@ -37,7 +37,7 @@ $(document).ready(function() {
             }
         });
 
-        // Make the right-click-menu appear iff a block was clicked
+        // Make the right-click-menu appear iff a column was clicked
         if ($(e.target).parents(".row").length > 0) {
             $(".custom-menu").finish().toggle(100).css({
                 left: e.pageX + "px",
@@ -58,37 +58,57 @@ $(document).ready(function() {
 
     // If a button is pressed which needs to hide the custom menu
     $(".custom-menu input.hide-menu").click(function(){
+        // Get classes of the column
+        var classList = selectedColumn.attr("class") != null ? selectedColumn.attr("class").split(" ") : null;
+        // Create regexes
+        var classRegex = /col-..-(\d+)/;
+        var offsetRegex = /col-..-offset-(\d+)/;
+
         if($(this).attr("data-action") == "apply") {
-            // Get classes of the block
-            var classList = selectedBlock.attr("class") != null ? selectedBlock.attr("class").split(" ") : null;
-            // Grab the part that must (not yet) change
-            classRegex = /col-..-\d+/;
-            var offsetRegex = /col-..-offset-\d+/
             $.each(classList, function(index, item) {
                 if (classRegex.test(item)) {
                     // Remove previous class
-                    selectedBlock.removeClass(item);
+                    selectedColumn.removeClass(item);
                     // Change class to new size and version
                     $(".custom-menu input[type='checkbox']:checked").each(function(index, item) {
-                        selectedBlock.addClass("col-" + item.value + "-" + $(".custom-menu #size").val());
+                        selectedColumn.addClass("col-" + item.value + "-" + $(".custom-menu #size").val());
                     });
                 } else if (offsetRegex.test(item)) {
                     // Remove if offset class
-                    selectedBlock.removeClass(item);
+                    selectedColumn.removeClass(item);
                 }
             });
             // Add all offset classes
             var newOffset = $(".custom-menu #offset").val();
             if (newOffset > 0) {
-                selectedBlock.addClass("col-xs-offset-" + newOffset);
-                selectedBlock.addClass("col-sm-offset-" + newOffset);
-                selectedBlock.addClass("col-md-offset-" + newOffset);
-                selectedBlock.addClass("col-lg-offset-" + newOffset);
+                selectedColumn.addClass("col-xs-offset-" + newOffset);
+                selectedColumn.addClass("col-sm-offset-" + newOffset);
+                selectedColumn.addClass("col-md-offset-" + newOffset);
+                selectedColumn.addClass("col-lg-offset-" + newOffset);
             }
         }
         // If delete button is pressed
         else if ($(this).attr("data-action") == "delete") {
-            selectedBlock.remove();
+            var oldSize = 0;
+            var oldOffset = 0;
+            $.each(classList, function(index, item) {
+                if ((match = classRegex.exec(item)) != null) {
+                    // Get the size
+                    oldSize = match[2];
+                } else if ((match = offsetRegex.exec(item)) != null) {
+                    // Get the offset
+                    oldOffset = match[2];
+                }
+            });
+            var gap = oldSize + oldOffset;
+            var columnList = selectedColumn.parent().children();
+            var index = columnList.index(selectedColumn);
+            if (columnList.length >= 1) {
+                if (index != 0 && index < columnList.length) {
+                    
+                }
+            }
+            selectedColumn.remove();
         }
 
         // Hide it AFTER the action was triggered
