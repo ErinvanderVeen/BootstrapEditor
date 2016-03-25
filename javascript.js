@@ -1,6 +1,62 @@
 var selectedColumn;
 
 $(document).ready(function() {
+
+    /*---[Add our own functions to jQuery]---*/
+    // These function are only defined for our specific div object
+
+    // Set the width of the column
+    jQuery.fn.setWidth = function (width) {
+        var column = $(this[0]);
+        var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        $.each(classList, function(index, item) {
+            if ((match = /(col-..-)\d+/.exec(item)) != null) {
+                // Replace class with new width
+                column.switchClass(item, match[1] + width);
+            }
+        });
+    }
+
+    // Get the width of the column
+    jQuery.fn.getWidth = function () {
+        var column = $(this[0]);
+        var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        var width = 0;
+        $.each(classList, function(index, item) {
+            if ((match = /col-..-(\d+)/.exec(item)) != null) {
+                width = match[1];
+                return true;
+            }
+        });
+        return width;
+    }
+
+    // Set the offset of the column
+    jQuery.fn.setOffset = function (offset) {
+        var column = $(this[0]);
+        var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        $.each(classList, function(index, item) {
+            if (/col-xs-offset-\d+/.test(item)) {
+                column.switchClass(item, "col-xs-offset-" + offset);
+            }
+        });
+    }
+
+    // Get the offset of the column
+    jQuery.fn.getOffset = function () {
+        var column = $(this[0]);
+        var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        var offset = 0;
+        $.each(classList, function(index, item) {
+            if ((match = /col-..-offset-(\d+)/.exec(item)) != null) {
+                offset = match[1];
+                return true;
+            }
+        });
+        return offset;
+    }
+    /*---[End of our custom functions]---*/
+    
     // Allow all sortable rows to be sortable       
     $(".sortable").sortable();
     // Disallow selection
@@ -13,29 +69,12 @@ $(document).ready(function() {
         // Get the column
         selectedColumn = $(e.target);
 
-        // Reset the dropdown menu
+        // Reset the checkboxes
         $(".custom-menu input[type='checkbox']").prop('checked', false);
 
-        // Load the properties of the column
-        // Get classes of the column
-        var classList = selectedColumn.attr("class") != null ? selectedColumn.attr("class").split(" ") : null;
-        // Prepare Regex (gets size of column)
-        var classRegex = /col-(..)-(\d+)/;
-        var offsetRegex = /col-..-offset-(\d+)/
-        var match;
-        $("#offset").val(0);
-        // Search for first class that has the size
-        $.each(classList, function(index, item) {
-            if ((match = classRegex.exec(item)) != null) {
-                // Set the dropdown menu to that size
-                $("#size").val(match[2]);
-
-                // Check the boxes that need to be checked
-                $("input[value='" + match[1] + "']").prop('checked', true);
-            } else if ((match = offsetRegex.exec(item)) != null) {
-                $("#offset").val(match[1]);
-            }
-        });
+        // Load to current values
+        $(".custom-menu #size").val(selectedColumn.getWidth());
+        $(".custom-menu #offset").val(selectedColumn.getOffset());
 
         // Make the right-click-menu appear iff a column was clicked
         if ($(e.target).parents(".row").length > 0) {
@@ -58,56 +97,16 @@ $(document).ready(function() {
 
     // If a button is pressed which needs to hide the custom menu
     $(".custom-menu input.hide-menu").click(function(){
-        // Get classes of the column
-        var classList = selectedColumn.attr("class") != null ? selectedColumn.attr("class").split(" ") : null;
-        // Create regexes
-        var classRegex = /col-..-(\d+)/;
-        var offsetRegex = /col-..-offset-(\d+)/;
 
         if($(this).attr("data-action") == "apply") {
-            $.each(classList, function(index, item) {
-                if (classRegex.test(item)) {
-                    // Remove previous class
-                    selectedColumn.removeClass(item);
-                    // Change class to new size and version
-                    $(".custom-menu input[type='checkbox']:checked").each(function(index, item) {
-                        selectedColumn.addClass("col-" + item.value + "-" + $(".custom-menu #size").val());
-                    });
-                } else if (offsetRegex.test(item)) {
-                    // Remove if offset class
-                    selectedColumn.removeClass(item);
-                }
-            });
-            // Add all offset classes
-            var newOffset = $(".custom-menu #offset").val();
-            if (newOffset > 0) {
-                selectedColumn.addClass("col-xs-offset-" + newOffset);
-                selectedColumn.addClass("col-sm-offset-" + newOffset);
-                selectedColumn.addClass("col-md-offset-" + newOffset);
-                selectedColumn.addClass("col-lg-offset-" + newOffset);
-            }
+            selectedColumn.setWidth($(".custom-menu #size").val());
+            selectedColumn.setOffset($(".custom-menu #offset").val());
+            console.log($(".custom-menu #offset").val());
         }
         // If delete button is pressed
         else if ($(this).attr("data-action") == "delete") {
-            var oldSize = 0;
-            var oldOffset = 0;
-            $.each(classList, function(index, item) {
-                if ((match = classRegex.exec(item)) != null) {
-                    // Get the size
-                    oldSize = match[2];
-                } else if ((match = offsetRegex.exec(item)) != null) {
-                    // Get the offset
-                    oldOffset = match[2];
-                }
-            });
-            var gap = oldSize + oldOffset;
-            var columnList = selectedColumn.parent().children();
-            var index = columnList.index(selectedColumn);
-            if (columnList.length >= 1) {
-                if (index != 0 && index < columnList.length) {
-                    
-                }
-            }
+
+            //var gap = $(".custom-menu #offset").val() + $(".custom-menu #size").val();
             selectedColumn.remove();
         }
 
