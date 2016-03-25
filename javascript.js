@@ -14,13 +14,7 @@ $(document).ready(function() {
             if ((match = /col-..-\d+/.exec(item)) != null) {
                 column.removeClass(item);
             }
-            var i = 0;
-            for ( ; i < viewports.length; i++) {
-                if (viewports[i] == viewport) {
-                    break;
-                }
-            }
-            for ( ; i < viewports.length; i++) {
+            for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
                 column.addClass("col-" + viewports[i] + "-" + width);
             }
 
@@ -73,6 +67,18 @@ $(document).ready(function() {
     $(".sortable").sortable();
     // Disallow selection
     $(".sortable").disableSelection();
+
+    $(".custom-menu input[type='checkbox']").change(function() {
+        if ($(this).is(":checked")) {
+            for (var i = viewports.indexOf($(this).val()); i < viewports.length; i++) {
+                $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', true);
+            }
+        } else {
+            for (var i = viewports.indexOf($(this).val()); i >= 0; i--) {
+                $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', false);
+            }
+        }
+    });
 
     $(document).bind("contextmenu", function (e) {
         // Don't allow the browsers to handle the right-click
