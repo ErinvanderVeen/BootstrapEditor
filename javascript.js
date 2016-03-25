@@ -1,4 +1,5 @@
 var selectedColumn;
+var viewports = ["xs", "sm", "md", "lg"];
 
 $(document).ready(function() {
 
@@ -6,14 +7,23 @@ $(document).ready(function() {
     // These function are only defined for our specific div object
 
     // Set the width of the column
-    jQuery.fn.setWidth = function (width) {
+    jQuery.fn.setWidth = function (width, viewport) {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
         $.each(classList, function(index, item) {
-            if ((match = /(col-..-)\d+/.exec(item)) != null) {
-                // Replace class with new width
-                column.switchClass(item, match[1] + width);
+            if ((match = /col-..-\d+/.exec(item)) != null) {
+                column.removeClass(item);
             }
+            var i = 0;
+            for ( ; i < viewports.length; i++) {
+                if (viewports[i] == viewport) {
+                    break;
+                }
+            }
+            for ( ; i < viewports.length; i++) {
+                column.addClass("col-" + viewports[i] + "-" + width);
+            }
+
         });
     }
 
@@ -21,14 +31,15 @@ $(document).ready(function() {
     jQuery.fn.getWidth = function () {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
-        var width = 0;
+        var width = 0, viewport = "lg";
         $.each(classList, function(index, item) {
-            if ((match = /col-..-(\d+)/.exec(item)) != null) {
-                width = match[1];
+            if ((match = /col-(..)-(\d+)/.exec(item)) != null) {
+                viewport = match[1];
+                width = match[2];
                 return true;
             }
         });
-        return width;
+        return [viewport, width];
     }
 
     // Set the offset of the column
@@ -37,9 +48,10 @@ $(document).ready(function() {
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
         $.each(classList, function(index, item) {
             if (/col-xs-offset-\d+/.test(item)) {
-                column.switchClass(item, "col-xs-offset-" + offset);
+                column.removeClass(item);
             }
         });
+        column.addClass("col-xs-offset-" + offset);
     }
 
     // Get the offset of the column
@@ -72,8 +84,13 @@ $(document).ready(function() {
         // Reset the checkboxes
         $(".custom-menu input[type='checkbox']").prop('checked', false);
 
+        var viewport = selectedColumn.getWidth()[0];
+        for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
+            $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', true);
+        }
+
         // Load to current values
-        $(".custom-menu #size").val(selectedColumn.getWidth());
+        $(".custom-menu #size").val(selectedColumn.getWidth()[1]);
         $(".custom-menu #offset").val(selectedColumn.getOffset());
 
         // Make the right-click-menu appear iff a column was clicked
@@ -99,9 +116,10 @@ $(document).ready(function() {
     $(".custom-menu input.hide-menu").click(function(){
 
         if($(this).attr("data-action") == "apply") {
-            selectedColumn.setWidth($(".custom-menu #size").val());
+            var viewport = $(".custom-menu input[type='checkbox']:checked").first().val();
+            selectedColumn.setWidth($(".custom-menu #size").val(), viewport);
             selectedColumn.setOffset($(".custom-menu #offset").val());
-            console.log($(".custom-menu #offset").val());
+
         }
         // If delete button is pressed
         else if ($(this).attr("data-action") == "delete") {
