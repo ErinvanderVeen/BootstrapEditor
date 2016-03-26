@@ -28,9 +28,8 @@ $(document).ready(function() {
         var width = 0, viewport = "lg";
         $.each(classList, function(index, item) {
             if ((match = /col-(..)-(\d+)/.exec(item)) != null) {
-                viewport = match[1];
+                viewport = viewports.indexOf(match[1]) < viewports.indexOf(viewport) ? match[1] : viewport;
                 width = match[2];
-                return true;
             }
         });
         return [viewport, width];
@@ -125,12 +124,20 @@ $(document).ready(function() {
             var viewport = $(".custom-menu input[type='checkbox']:checked").first().val();
             selectedColumn.setWidth($(".custom-menu #size").val(), viewport);
             selectedColumn.setOffset($(".custom-menu #offset").val());
-
         }
         // If delete button is pressed
         else if ($(this).attr("data-action") == "delete") {
-
-            //var gap = $(".custom-menu #offset").val() + $(".custom-menu #size").val();
+            var gap = parseInt(selectedColumn.getWidth()[1]) + parseInt(selectedColumn.getOffset());
+            var divs = selectedColumn.parent().children();
+            var index = divs.index(selectedColumn);
+            if (index == 0 && index != divs.length){
+                $(divs[1]).setWidth(gap + parseInt($(divs[1]).getWidth()[1]), $(divs[1]).getWidth()[0]);
+            } else if (index != 0 && index == divs.length-1) {
+                $(divs[index-1]).setWidth(gap + parseInt($(divs[index-1]).getWidth()[1]), $(divs[index-1]).getWidth()[0]);
+            } else if (index != 0 && index != divs.length-1) {
+                $(divs[index-1]).setWidth(Math.floor(gap/2) + parseInt($(divs[index-1]).getWidth()[1]), $(divs[index-1]).getWidth()[0]);
+                $(divs[index+1]).setWidth(Math.ceil(gap/2) + parseInt($(divs[index+1]).getWidth()[1]), $(divs[index+1]).getWidth()[0]);
+            }
             selectedColumn.remove();
         }
 
