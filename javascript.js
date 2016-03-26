@@ -11,27 +11,31 @@ $(document).ready(function() {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
         $.each(classList, function(index, item) {
+            // Remove all old classes
             if ((match = /col-..-\d+/.exec(item)) != null) {
                 column.removeClass(item);
             }
-            for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
-                column.addClass("col-" + viewports[i] + "-" + width);
-            }
-
         });
+        // Add all new classes
+        for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
+            column.addClass("col-" + viewports[i] + "-" + width);
+        }
     }
 
     // Get the width of the column
     jQuery.fn.getWidth = function () {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        // Default values
         var width = 0, viewport = "lg";
         $.each(classList, function(index, item) {
+            // Capture the values we need
             if ((match = /col-(..)-(\d+)/.exec(item)) != null) {
                 viewport = viewports.indexOf(match[1]) < viewports.indexOf(viewport) ? match[1] : viewport;
                 width = match[2];
             }
         });
+        // Return a tuple (array)
         return [viewport, width];
     }
 
@@ -39,11 +43,13 @@ $(document).ready(function() {
     jQuery.fn.setOffset = function (offset) {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
+        // Remove all old classes
         $.each(classList, function(index, item) {
             if (/col-xs-offset-\d+/.test(item)) {
                 column.removeClass(item);
             }
         });
+        // We need only add 1 class since all higher viewports default to lower offset
         column.addClass("col-xs-offset-" + offset);
     }
 
@@ -52,9 +58,11 @@ $(document).ready(function() {
         var column = $(this[0]);
         var classList = column.attr("class") != null ? column.attr("class").split(" ") : null;
         var offset = 0;
+        // Find the offset and capture it
         $.each(classList, function(index, item) {
             if ((match = /col-..-offset-(\d+)/.exec(item)) != null) {
                 offset = match[1];
+                // There should only be 1 offset class. We can return true to exit the loop
                 return true;
             }
         });
@@ -67,6 +75,9 @@ $(document).ready(function() {
     // Disallow selection
     $(".sortable").disableSelection();
 
+    // Check / uncheck all checkboxes under/above the clicked one to
+    // make it obvious that sizes for higher viewports
+    // are inherited from lower ones.
     $(".custom-menu input[type='checkbox']").change(function() {
         if ($(this).is(":checked")) {
             for (var i = viewports.indexOf($(this).val()); i < viewports.length; i++) {
@@ -126,18 +137,30 @@ $(document).ready(function() {
             selectedColumn.setOffset($(".custom-menu #offset").val());
         }
         // If delete button is pressed
+        // This part is rather a mess because there are 3 possible situations:
+        // The selectedColumn has only a left neighbour
+        // Only a right neighbour
+        // Or both a left and a right neighbour
         else if ($(this).attr("data-action") == "delete") {
+            // Calculate the gap that would be created upon deletion
             var gap = parseInt(selectedColumn.getWidth()[1]) + parseInt(selectedColumn.getOffset());
             var divs = selectedColumn.parent().children();
             var index = divs.index(selectedColumn);
+
+            // Case 1
             if (index == 0 && index != divs.length){
                 $(divs[1]).setWidth(gap + parseInt($(divs[1]).getWidth()[1]), $(divs[1]).getWidth()[0]);
-            } else if (index != 0 && index == divs.length-1) {
+            }
+            // Case 2
+            else if (index != 0 && index == divs.length-1) {
                 $(divs[index-1]).setWidth(gap + parseInt($(divs[index-1]).getWidth()[1]), $(divs[index-1]).getWidth()[0]);
-            } else if (index != 0 && index != divs.length-1) {
+            }
+            // Case 3
+            else if (index != 0 && index != divs.length-1) {
                 $(divs[index-1]).setWidth(Math.floor(gap/2) + parseInt($(divs[index-1]).getWidth()[1]), $(divs[index-1]).getWidth()[0]);
                 $(divs[index+1]).setWidth(Math.ceil(gap/2) + parseInt($(divs[index+1]).getWidth()[1]), $(divs[index+1]).getWidth()[0]);
             }
+            // Finally remove the collumn
             selectedColumn.remove();
         }
 
