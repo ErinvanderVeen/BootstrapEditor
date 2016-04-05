@@ -98,6 +98,11 @@ $(document).ready(function() {
         applyChanges();
     });
 
+    $(".custom-menu select").change(function() {
+        // Apply changes
+        applyChanges();
+    });
+
     $(document).bind("contextmenu", function (e) {
         // Don't allow the browsers to handle the right-click
         e.preventDefault();
