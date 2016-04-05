@@ -94,23 +94,25 @@ $(document).ready(function() {
         // Don't allow the browsers to handle the right-click
         e.preventDefault();
 
-        // Get the column
-        selectedColumn = $(e.target);
+        // Only load values and show menu if a column was clicked
+        if($(e.target).parents(".row").length > 0)
+        {
+            // Get the column
+            selectedColumn = $(e.target);
 
-        // Reset the checkboxes
-        $(".custom-menu input[type='checkbox']").prop('checked', false);
+            // Reset the checkboxes
+            $(".custom-menu input[type='checkbox']").prop('checked', false);
 
-        var viewport = selectedColumn.getWidth()[0];
-        for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
-            $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', true);
-        }
+            var viewport = selectedColumn.getWidth()[0];
+            for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
+                $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', true);
+            }
 
-        // Load to current values
-        $(".custom-menu #size").val(selectedColumn.getWidth()[1]);
-        $(".custom-menu #offset").val(selectedColumn.getOffset());
+            // Load to current values
+            $(".custom-menu #size").val(selectedColumn.getWidth()[1]);
+            $(".custom-menu #offset").val(selectedColumn.getOffset());
 
-        // Make the right-click-menu appear iff a column was clicked
-        if ($(e.target).parents(".row").length > 0) {
+            // Make the right-click-menu appear iff a column was clicked
             $(".custom-menu").finish().toggle(100).css({
                 left: e.pageX + "px",
                 top: e.pageY + "px"
