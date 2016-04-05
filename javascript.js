@@ -1,6 +1,12 @@
 var selectedColumn;
 var viewports = ["xs", "sm", "md", "lg"];
 
+function applyChanges() {
+    var viewport = $(".custom-menu input[type='checkbox']:checked").first().val();
+    selectedColumn.setWidth($(".custom-menu #size").val(), viewport);
+    selectedColumn.setOffset($(".custom-menu #offset").val());
+}
+
 $(document).ready(function() {
 
     /*---[Add our own functions to jQuery]---*/
@@ -88,6 +94,8 @@ $(document).ready(function() {
                 $(".custom-menu input[value='" + viewports[i] + "']").prop('checked', false);
             }
         }
+        // Apply changes
+        applyChanges();
     });
 
     $(document).bind("contextmenu", function (e) {
@@ -133,10 +141,9 @@ $(document).ready(function() {
     // If a button is pressed which needs to hide the custom menu
     $(".custom-menu input.hide-menu").click(function(){
 
+        // If the auto update did not work, the user can still apply
         if($(this).attr("data-action") == "apply") {
-            var viewport = $(".custom-menu input[type='checkbox']:checked").first().val();
-            selectedColumn.setWidth($(".custom-menu #size").val(), viewport);
-            selectedColumn.setOffset($(".custom-menu #offset").val());
+            applyChanges();
         }
         // If delete button is pressed
         // This part is rather a mess because there are 3 possible situations:
