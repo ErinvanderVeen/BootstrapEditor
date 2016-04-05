@@ -22,8 +22,14 @@ $(document).ready(function() {
                 column.removeClass(item);
             }
         });
+        // Load only the lg if no viewports are selected
+        var i = viewports.indexOf(viewport);
+        if(i == -1) {
+            $(".custom-menu input[value='lg']").prop('checked', true);
+            i = viewports.length-1;
+        }
         // Add all new classes
-        for (var i = viewports.indexOf(viewport); i < viewports.length; i++) {
+        for ( ; i < viewports.length; i++) {
             column.addClass("col-" + viewports[i] + "-" + width);
         }
     }
