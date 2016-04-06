@@ -110,12 +110,13 @@ $(document).ready(function() {
     });
 
     $(document).bind("contextmenu", function (e) {
-        // Don't allow the browsers to handle the right-click
-        e.preventDefault();
 
         // Only load values and show menu if a column was clicked
         if($(e.target).parents(".row").length > 0)
-        {
+        {   
+            // Don't allow the browsers to handle the right-click
+            e.preventDefault();
+
             // Get the column
             selectedColumn = $(e.target);
 
