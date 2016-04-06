@@ -109,11 +109,7 @@ $(document).ready(function() {
         applyChanges();
     });
 
-    $(document).bind("contextmenu", function (e) {
-
-        // Only load values and show menu if a column was clicked
-        if($(e.target).parents(".row").length > 0)
-        {   
+    $(".row div").bind("contextmenu", function (e) {
             // Don't allow the browsers to handle the right-click
             e.preventDefault();
 
@@ -137,7 +133,6 @@ $(document).ready(function() {
                 left: e.pageX + "px",
                 top: e.pageY + "px"
             });
-        }
     });
 
     // Function to hide the menu
